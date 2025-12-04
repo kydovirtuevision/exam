@@ -12,11 +12,11 @@ export default function Sidebar(){
   const rail = [
     { key: 'insights', icon: 'fa-compass', title: 'Insights' },
     { key: 'collect', icon: 'fa-download', title: 'Collect' },
-    { key: 'reviews', icon: 'fa-thumbs-up', title: 'Reviews' },
-    { key: 'carbon', icon: 'fa-leaf', title: 'Carbon' },
     { key: 'utilities', icon: 'fa-wrench', title: 'Utilities' },
     { key: 'reports', icon: 'fa-chart-line', title: 'Reports' },
+    { key: 'reviews', icon: 'fa-thumbs-up', title: 'Reviews' },
     { key: 'actions', icon: 'fa-bolt', title: 'Actions' },
+    { key: 'carbon', icon: 'fa-leaf', title: 'Carbon' },
   ]
 
   return (
