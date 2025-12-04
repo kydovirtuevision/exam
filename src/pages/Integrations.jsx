@@ -9,10 +9,10 @@ import measurablImg from '../assets/measurabl_icon.jpeg.png'
 
 const services = [
   { id: 'qs', title: 'Amazon QuickSight', img: qsImg, description: 'Amazon BI service to create dashboards.' },
-  { id: 'kafka', title: 'Kafka', img: tableauImg, description: 'Real-time streaming and messaging systems.' },
+  { id: 'kafka', title: 'Kafka', img: kafkaImg, description: 'Real-time streaming and messaging systems.' },
   { id: 'power', title: 'Power BI', img: powerbiImg, description: 'Microsoft BI service to create dashboards.' },
   { id: 'zap', title: 'Zapier', img: zapierImg, description: 'Automation tool that connects various apps.' },
-  { id: 'tableau', title: 'Tableau', img: kafkaImg, description: 'BI service that helps seeing and transforming data.' },
+  { id: 'tableau', title: 'Tableau', img: tableauImg, description: 'BI service that helps seeing and transforming data.' },
   { id: 'measurabl', title: 'Measurabl', img: measurablImg, description: 'Enable the push and pull of data via API.' },
 ]
 

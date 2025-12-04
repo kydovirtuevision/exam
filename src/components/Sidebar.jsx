@@ -10,36 +10,39 @@ const sections = [
 
 export default function Sidebar(){
   return (
-    <div className="flex">
-      {/* Narrow dark rail with icons */}
-      <div className="w-16 bg-gray-900 text-white min-h-screen p-3 flex flex-col items-center gap-4">
-        <img src={Logo} alt="logo" className="w-8 h-8" />
-        <button title="Insights" className="w-10 h-10 rounded hover:bg-gray-800 flex items-center justify-center"><i className="fa-solid fa-compass"></i></button>
-        <button title="Collect" className="w-10 h-10 rounded hover:bg-gray-800 flex items-center justify-center"><i className="fa-solid fa-box"></i></button>
-        <button title="Reviews" className="w-10 h-10 rounded hover:bg-gray-800 flex items-center justify-center"><i className="fa-solid fa-thumbs-up"></i></button>
-        <button title="Carbon" className="w-10 h-10 rounded hover:bg-gray-800 flex items-center justify-center mt-auto"><i className="fa-solid fa-leaf"></i></button>
+    <aside className="w-64 bg-gray-900 text-white min-h-screen p-4">
+      <div className="mb-6 flex items-center gap-3">
+        <img src={Logo} alt="BraveGen" className="w-10 h-10" />
+        <div className="font-bold text-lg">BraveGen</div>
       </div>
 
-      {/* Light menu area */}
-      <aside className="w-64 bg-white text-gray-800 min-h-screen p-4 border-r">
-        <div className="mb-6">
-          <div className="font-bold text-lg">BraveGen</div>
+      {sections.map((s)=> (
+        <div key={s.title} className="mb-6">
+          <div className="uppercase text-xs text-gray-400 px-2 mb-2">{s.title}</div>
+          <ul>
+            {s.items.map(i => (
+              <li key={i} className="mb-2">
+                <NavLink to={`/Settings/${i}`} className={({isActive}) => `flex items-center gap-3 px-3 py-2 rounded ${isActive || i==='Integrations' ? 'bg-green-500 text-white' : 'text-gray-200 hover:bg-gray-800'}`}>
+                  <span className="w-7 h-7 flex items-center justify-center bg-gray-800 rounded">
+                    {/* approximate icons */}
+                    {i==='Manage' && <i className="fa-solid fa-house" />}
+                    {i==='Users' && <i className="fa-solid fa-users" />}
+                    {i==='Tags' && <i className="fa-solid fa-tag" />}
+                    {i==='Integrations' && <i className="fa-solid fa-plug" />}
+                    {i==='Configuration' && <i className="fa-solid fa-gear" />}
+                    {i==='Hierarchy' && <i className="fa-solid fa-sitemap" />}
+                    {i==='Assets' && <i className="fa-solid fa-box" />}
+                    {i==='Inventory Items' && <i className="fa-solid fa-list" />}
+                    {i==='Emission Factors' && <i className="fa-solid fa-cloud" />}
+                    {i==='Snapshots' && <i className="fa-solid fa-camera" />}
+                  </span>
+                  <span>{i}</span>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
         </div>
-        {sections.map((s)=> (
-          <div key={s.title} className="mb-4">
-            <div className="uppercase text-xs text-gray-400 px-2 mb-2">{s.title}</div>
-            <ul>
-              {s.items.map(i => (
-                <li key={i} className="mb-1">
-                  <NavLink to={`/Settings/${i}`} className={({isActive}) => `block px-3 py-2 rounded ${isActive || i==='Integrations' ? 'bg-green-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}>
-                    {i}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </aside>
-    </div>
+      ))}
+    </aside>
   )
 }
