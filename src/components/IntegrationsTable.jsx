@@ -1,22 +1,6 @@
-import React, {useState, useMemo} from 'react'
-import mockData from '../data/mockIntegrations'
+import React, { useState, useMemo, useEffect } from 'react'
+import { getIntegrations } from '../services/integrationsService'
 import Modal from './Modal'
-
-function TableRow({row, onEdit, onDelete}){
-  return (
-    <tr className="border-b">
-      <td className="px-4 py-3">{row.integration}</td>
-      <td className="px-4 py-3 text-blue-600">{row.name}</td>
-      <td className="px-4 py-3"><span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">{row.source}</span></td>
-      <td className="px-4 py-3">{row.entity}</td>
-      <td className="px-4 py-3">{row.interval || '-'}</td>
-      <td className="px-4 py-3 text-right">
-        <button onClick={()=>onEdit(row)} className="text-gray-600 px-2"><i className="fa-regular fa-pen-to-square" /></button>
-        <button onClick={()=>onDelete(row)} className="text-red-600 px-2"><i className="fa-regular fa-trash-can" /></button>
-      </td>
-    </tr>
-  )
-}
 
 export default function IntegrationsTable(){
   const [query, setQuery] = useState('')
@@ -24,23 +8,45 @@ export default function IntegrationsTable(){
   const [pageSize] = useState(5)
   const [editRow, setEditRow] = useState(null)
   const [deleteRow, setDeleteRow] = useState(null)
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(()=>{
+    let mounted = true
+    setLoading(true)
+    getIntegrations().then(items => { if(mounted){ setData(items); setLoading(false) } })
+    return ()=> { mounted = false }
+  }, [])
 
   const filtered = useMemo(()=>{
     const q = query.trim().toLowerCase()
-    if(!q) return mockData
-    return mockData.filter(r =>
-      r.name.toLowerCase().includes(q) || r.integration.toLowerCase().includes(q) || r.source.toLowerCase().includes(q)
+    if(!q) return data
+    return data.filter(r =>
+      r.name.toLowerCase().includes(q) || r.integration.toLowerCase().includes(q) || r.source.toLowerCase().includes(q) || r.entity.toLowerCase().includes(q)
     )
-  },[query])
+  },[query, data])
 
   const total = filtered.length
   const pages = Math.max(1, Math.ceil(total / pageSize))
   const current = filtered.slice((page-1)*pageSize, page*pageSize)
 
   function onDeleteConfirm(){
-    // since this is a mock app we won't mutate the source data
     setDeleteRow(null)
     alert('Deleted (mock): ' + (deleteRow?.name||''))
+  }
+
+  function copyToClipboard(text){
+    if(typeof navigator !== 'undefined' && navigator.clipboard){
+      navigator.clipboard.writeText(text)
+    } else {
+      const el = document.createElement('textarea')
+      el.value = text
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      document.body.removeChild(el)
+    }
+    alert('Copied to clipboard')
   }
 
   return (
@@ -61,12 +67,29 @@ export default function IntegrationsTable(){
               <th className="px-4 py-3">Source</th>
               <th className="px-4 py-3">Entity/Group</th>
               <th className="px-4 py-3">Interval</th>
+              <th className="px-4 py-3">Connector URL</th>
+              <th className="px-4 py-3">Instructions</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
-            {current.map(r => (
-              <TableRow key={r.id} row={r} onEdit={setEditRow} onDelete={setDeleteRow} />
+            {loading && (
+              <tr><td colSpan={8} className="p-6 text-center text-gray-500">Loading...</td></tr>
+            )}
+            {!loading && current.map(r => (
+              <tr key={r.id} className="border-b">
+                <td className="px-4 py-3">{r.integration}</td>
+                <td className="px-4 py-3 text-blue-600">{r.name}</td>
+                <td className="px-4 py-3"><span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">{r.source}</span></td>
+                <td className="px-4 py-3">{r.entity}</td>
+                <td className="px-4 py-3">{r.interval || '-'}</td>
+                <td className="px-4 py-3 text-blue-600"><button onClick={()=>copyToClipboard(r.connectorUrl)} className="underline">Copy to Clipboard</button></td>
+                <td className="px-4 py-3 text-blue-600"><a href={r.instructionsUrl} target="_blank" rel="noreferrer" className="underline">View</a></td>
+                <td className="px-4 py-3 text-right">
+                  <button onClick={()=>setEditRow(r)} className="text-gray-600 px-2"><i className="fa-regular fa-pen-to-square" /></button>
+                  <button onClick={()=>setDeleteRow(r)} className="text-red-600 px-2"><i className="fa-regular fa-trash-can" /></button>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
@@ -76,29 +99,36 @@ export default function IntegrationsTable(){
         <div className="text-sm text-gray-600">Page {page} of {pages}</div>
         <div className="flex items-center gap-2">
           <button onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page<=1} className="px-3 py-1 border rounded">Previous</button>
+          <div className="flex items-center gap-1">
+            {Array.from({length: pages}).map((_,i)=> (
+              <button key={i+1} onClick={()=>setPage(i+1)} className={`px-3 py-1 border rounded ${page===i+1? 'bg-gray-200': ''}`}>{i+1}</button>
+            ))}
+          </div>
           <button onClick={()=>setPage(p=>Math.min(pages,p+1))} disabled={page>=pages} className="px-3 py-1 border rounded">Next</button>
         </div>
       </div>
 
       {editRow && (
-        <Modal onClose={()=>setEditRow(null)} title="Edit Integration">
-          <div className="p-4">
-            <div className="mb-2">Edit (mock) for <strong>{editRow.name}</strong></div>
+        <Modal onClose={()=>setEditRow(null)} title="Change to Existing Connection">
+          <div className="p-6">
+            <div className="mb-4 text-gray-700">Changes may disrupt functionality and impact data flow.
+              <div className="mt-3">Are you sure you want to make changes to {editRow.integration} "{editRow.name}" connection?</div>
+            </div>
             <div className="flex gap-2">
-              <button onClick={()=>setEditRow(null)} className="px-4 py-2 bg-green-500 text-white rounded">Save</button>
-              <button onClick={()=>setEditRow(null)} className="px-4 py-2 border rounded">Cancel</button>
+              <button onClick={()=>setEditRow(null)} className="px-4 py-2 border rounded">Undo</button>
+              <button onClick={()=>setEditRow(null)} className="px-4 py-2 bg-black text-white rounded">Save Changes</button>
             </div>
           </div>
         </Modal>
       )}
 
       {deleteRow && (
-        <Modal onClose={()=>setDeleteRow(null)} title="Confirm Delete">
-          <div className="p-4">
-            <div className="mb-4">Are you sure you want to remove <strong>{deleteRow.name}</strong>?</div>
+        <Modal onClose={()=>setDeleteRow(null)} title={"Remove \"" + deleteRow?.name + "\" Connection?"}>
+          <div className="p-6">
+            <div className="mb-4 text-gray-700">Are you sure you want to remove {deleteRow.integration} "{deleteRow.name}" connection?</div>
             <div className="flex gap-2">
-              <button onClick={onDeleteConfirm} className="px-4 py-2 bg-red-600 text-white rounded">Delete</button>
-              <button onClick={()=>setDeleteRow(null)} className="px-4 py-2 border rounded">Cancel</button>
+              <button onClick={()=>setDeleteRow(null)} className="px-4 py-2 border rounded">Undo</button>
+              <button onClick={onDeleteConfirm} className="px-4 py-2 bg-red-600 text-white rounded">Remove</button>
             </div>
           </div>
         </Modal>
