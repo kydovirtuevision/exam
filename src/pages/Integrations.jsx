@@ -1,9 +1,9 @@
 import React from 'react'
 import IntegrationsTable from '../components/IntegrationsTable'
 import qsImg from '../assets/image 348.png'
-import kafkaImg from '../assets/image 348 copy.png'
-import zapierImg from '../assets/image 351.png'
-import tableauImg from '../assets/snowflake_icon.png.png'
+import kafkaImg from '../assets/snowflake_icon.png.png'
+import zapierImg from '../assets/image 348 copy 2.png'
+import tableauImg from '../assets/image 351.png'
 import powerbiImg from '../assets/image 348 copy.png'
 import measurablImg from '../assets/measurabl_icon.jpeg.png'
 
