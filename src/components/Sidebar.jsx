@@ -1,4 +1,5 @@
 import React from 'react'
+import Logo from '../assets/Logo.png'
 import { NavLink } from 'react-router-dom'
 
 const sections = [
@@ -10,7 +11,8 @@ const sections = [
 export default function Sidebar(){
   return (
     <aside className="w-64 bg-gray-800 text-white min-h-screen p-4">
-      <div className="mb-6">
+      <div className="mb-6 flex items-center gap-3">
+        <img src={Logo} alt="BraveGen" className="w-10 h-10" />
         <div className="font-bold text-lg">BraveGen</div>
       </div>
       {sections.map((s)=> (
