@@ -86,8 +86,8 @@ export default function IntegrationsTable(){
                 <td className="px-4 py-3 text-blue-600"><button onClick={()=>copyToClipboard(r.connectorUrl)} className="underline">Copy to Clipboard</button></td>
                 <td className="px-4 py-3 text-blue-600"><a href={r.instructionsUrl} target="_blank" rel="noreferrer" className="underline">View</a></td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={()=>setEditRow(r)} className="text-gray-600 px-2"><i className="fa-regular fa-pen-to-square" /></button>
-                  <button onClick={()=>setDeleteRow(r)} className="text-red-600 px-2"><i className="fa-regular fa-trash-can" /></button>
+                  <button onClick={()=>setEditRow(r)} className="text-gray-600 px-2"><i className="fa-solid fa-pen" /></button>
+                  <button onClick={()=>setDeleteRow(r)} className="text-red-600 px-2"><i className="fa-solid fa-trash" /></button>
                 </td>
               </tr>
             ))}
